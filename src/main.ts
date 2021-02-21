@@ -3,6 +3,8 @@ import Entry from './Entry.svelte';
 
 const tasks: Entry[] = [];
 
+let worker = new Worker("build/wasm.js");
+
 for(let i = 0; i < 5; i++)
 {
 	tasks.push(new Entry({
