@@ -5,6 +5,25 @@ const tasks: Entry[] = [];
 
 let worker = new Worker("build/wasm.js");
 
+let socket = new WebSocket("ws://localhost:8080");
+socket.addEventListener('open', () => {
+	console.log("Opened client connection.")
+})
+
+socket.addEventListener('message', (e) => {
+	let message = JSON.parse(e.data);
+	console.log(message)
+})
+
+socket.addEventListener('close', () => {
+	console.log("Socket closed.")
+})
+
+
+setInterval(() => {
+	socket.send("fetch")
+}, 5000)
+
 for(let i = 0; i < 5; i++)
 {
 	tasks.push(new Entry({
