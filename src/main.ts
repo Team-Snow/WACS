@@ -1,5 +1,12 @@
 import App from './App.svelte';
 import Entry from './Entry.svelte';
+import wasm from "../../PAC/Cargo.toml";
+
+async function loadWasm() {
+	const exports = await wasm();
+	exports.initialize();
+}
+loadWasm();
 
 const tasks: Entry[] = [];
 
