@@ -9,6 +9,7 @@ for(let i = 0; i < 5; i++)
 		target: document.querySelector("#work-table"),
 		props: {
 			taskName: `${i}`,
+			currentWorkers: 0,
 			timesServed: 0,
 			timesCompleted: 0,
 			leadingSolution:  "[Pending]"
@@ -31,6 +32,7 @@ socket.addEventListener('message', (e) => {
 	{
 		tasks[i].$$set({
 			timesServed: hashes[i].served,
+			currentWorkers: hashes[i].nodes.length,
 			timesCompleted: hashes[i].completed,
 			leadingSolution: hashes[i].completed > 0 ? hashes[i].text : "[Pending]"
 		});
