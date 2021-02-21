@@ -3,27 +3,6 @@ import Entry from './Entry.svelte';
 
 const tasks: Entry[] = [];
 
-let worker = new Worker("build/wasm.js");
-
-let socket = new WebSocket("ws://localhost:8080");
-socket.addEventListener('open', () => {
-	console.log("Opened client connection.")
-})
-
-socket.addEventListener('message', (e) => {
-	let message = JSON.parse(e.data);
-	console.log(message)
-})
-
-socket.addEventListener('close', () => {
-	console.log("Socket closed.")
-})
-
-
-setInterval(() => {
-	socket.send("fetch")
-}, 5000)
-
 for(let i = 0; i < 5; i++)
 {
 	tasks.push(new Entry({
@@ -36,5 +15,35 @@ for(let i = 0; i < 5; i++)
 		}
 	}));
 }
+
+let worker = new Worker("build/wasm.js");
+
+let socket = new WebSocket("ws://localhost:8080");
+socket.addEventListener('open', () => {
+	console.log("Opened client connection.")
+});
+
+socket.addEventListener('message', (e) => {
+	let message = JSON.parse(e.data);
+	console.log(message);
+	let hashes = message.hashes;
+	for(let i = 0; i < hashes.length && i < tasks.length; i++)
+	{
+		tasks[i].$$set({
+			timesServed: hashes[i].served,
+			timesCompleted: hashes[i].completed,
+			leadingSolution: hashes[i].completed > 0 ? hashes[i].text : "[Pending]"
+		});
+	}
+});
+
+socket.addEventListener('close', () => {
+	console.log("Socket closed.")
+});
+
+
+setInterval(() => {
+	socket.send("fetch")
+}, 5000);
 
 export default app;
