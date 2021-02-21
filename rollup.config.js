@@ -31,7 +31,7 @@ function serve() {
 	};
 }
 
-export default {
+export default [{
 	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
@@ -82,4 +82,34 @@ export default {
 	watch: {
 		clearScreen: false
 	}
-};
+}, {
+	input: 'src/wasm.ts',
+	output: {
+		sourcemap: true,
+		format: 'iife',
+		file: 'public/build/wasm.js'
+	},
+	plugins: [
+		rust({inlineWasm: true}),
+		commonjs(),
+		typescript({
+			sourceMap: !production,
+			inlineSources: !production
+		}),
+
+		// In dev mode, call `npm run start` once
+		// the bundle has been generated
+		!production && serve(),
+
+		// Watch the `public` directory and refresh the
+		// browser on changes when not in production
+		!production && livereload('public'),
+
+		// If we're building for production (npm run build
+		// instead of npm run dev), minify
+		production && terser()
+	],
+	watch: {
+		clearScreen: false
+	}
+}];
